@@ -16,7 +16,6 @@ from xml.dom import minidom
 HOST="Your-Mac.local"
 PLEX_HOST = "http://localhost:32400"
 PLEX_LIBRARY_DB_FILE = "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
-LOCAL_MUSIC_LIBRARY = "/somewhere/iTunes Media"
 REMOTEFILE = "/Users/yourmacusername/Music/iTunes/iTunes Music Library.xml"
 ### Change this if you want to add your itunes rating each track in plex
 UPDATE_PLEX_RATING = False
@@ -147,7 +146,7 @@ plex_db_connection = sqlite3.connect(plex_tmp_file)
 plex_db = plex_db_connection.cursor()
 
 def searchPlexForFilename(filename):
-    t = (filename,)
+    t = ("%%%s" % filename,)
     plex_db.execute("""
         SELECT metadata_items.id, library_sections.uuid
         FROM media_parts
@@ -166,7 +165,7 @@ def searchPlexForFilename(filename):
 def getLocalFilename(xml_filename):
     replaced_filename = xml_filename.replace(itunes_library['Music Folder'], "file://localhost/")
     replaced_filename = unicode(urlparse.unquote(urlparse.urlparse(replaced_filename).path[1:]),"utf8")
-    return os.path.join(LOCAL_MUSIC_LIBRARY, replaced_filename)
+    return replaced_filename
 
 
 SONG_DATA = {}
